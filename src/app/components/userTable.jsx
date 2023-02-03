@@ -8,8 +8,7 @@ const UserTable = ({
     onSort,
     selectedSort,
     onToggleBookMark,
-    onDelete,
-    ...rest
+    onDelete
 }) => {
     const columns = {
         name: { path: "name", name: "Имя" },
@@ -45,14 +44,12 @@ const UserTable = ({
         }
     };
     return (
-        <table className="table">
-            <Table
-                onSort={onSort}
-                selectedSort={selectedSort}
-                columns={columns}
-                data={users}
-            ></Table>
-        </table>
+        <Table
+            onSort={onSort}
+            selectedSort={selectedSort}
+            columns={columns}
+            data={users}
+        ></Table>
     );
 };
 
