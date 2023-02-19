@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../api";
 import QualitiesList from "./qualitiesList";
 import { useHistory } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const UserInfo = ({ userId }) => {
     const history = useHistory();
@@ -40,6 +41,10 @@ const UserInfo = ({ userId }) => {
         );
     }
     return <h1>{msg}</h1>;
+};
+
+UserInfo.propTypes = {
+    userId: PropTypes.string.isRequired
 };
 
 export default UserInfo;

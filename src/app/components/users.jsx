@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { paginate } from "../utils/paginate";
+import { paginate } from "./utils/paginate";
 import Pagination from "./pagination";
 import api from "../api";
 import GroupList from "./groupList";
 import SearchStatus from "./searchStatus";
 import UserTable from "./userTable";
 import _ from "lodash";
+
 const Users = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [professions, setProfession] = useState();
@@ -17,6 +18,12 @@ const Users = () => {
         arrowClass: "bi bi-caret-up-fill"
     });
     const pageSize = 8;
+    const [userName, setUserName] = useState("");
+    const handleSearch = (evt) => {
+        const { value } = evt.target;
+        setSelectedProf();
+        setUserName(value);
+    };
 
     const [users, setUsers] = useState();
     useEffect(() => {
@@ -46,6 +53,7 @@ const Users = () => {
 
     const handleProfessionSelect = (item) => {
         setSelectedProf(item);
+        setUserName("");
     };
 
     const handlePageChange = (pageIndex) => {
@@ -57,13 +65,24 @@ const Users = () => {
     };
 
     if (users) {
+        let searchedUsers = [];
+
+        if (userName) {
+            let userRegExp = new RegExp(userName, "gi");
+            searchedUsers = users.filter(
+                (user) => userRegExp.test(user.name) === true
+            );
+        } else {
+            searchedUsers = users;
+        }
+
         const filteredUsers = selectedProf
             ? users.filter(
                   (user) =>
                       JSON.stringify(user.profession) ===
                       JSON.stringify(selectedProf)
               )
-            : users;
+            : searchedUsers;
 
         const count = filteredUsers.length;
         const sortedUsers = _.orderBy(
@@ -71,7 +90,7 @@ const Users = () => {
             [sortBy.path],
             [sortBy.order]
         );
-        const usersCrop = paginate(sortedUsers, currentPage, pageSize);
+        let usersCrop = paginate(sortedUsers, currentPage, pageSize);
         const clearFilter = () => {
             setSelectedProf();
         };
@@ -89,13 +108,24 @@ const Users = () => {
                             className="btn btn-secondary mt-2"
                             onClick={clearFilter}
                         >
-                            {" "}
                             Очистить
                         </button>
                     </div>
                 )}
                 <div className="d-flex flex-column">
                     <SearchStatus length={count} />
+                    <form>
+                        <div className="input-group mb-3">
+                            <input
+                                className="form-control"
+                                type="text"
+                                id="username"
+                                placeholder="Search..."
+                                onChange={handleSearch}
+                                value={userName}
+                            />
+                        </div>
+                    </form>
                     {count > 0 && (
                         <UserTable
                             users={usersCrop}
